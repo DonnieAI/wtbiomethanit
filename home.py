@@ -3,8 +3,8 @@ WTBIOMETHANIT
 
 """
 #cdm
-#projenv\Scripts\activate
-#streamlit run home.py
+#     projenv\Scripts\activate
+#     streamlit run home.py
 
 import streamlit as st
 import pandas as pd
