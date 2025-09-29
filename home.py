@@ -66,9 +66,9 @@ st.sidebar.markdown(
 )
 # ---------Main content
 st.set_page_config(page_title="Fuel Dashboard", layout="wide")
-st.title("WAVETRANSITION ITALIAN BIOEMETHANE LANDSCAPE ANALYSIS")
+st.title("**BIOMETHANIT**")
 st.markdown("""
-## Welcome to **BIOMETHANIT**
+## WAVETRANSITION ITALIAN BIOEMETHANE LANDSCAPE ANALYSIS   
 
 This web application is designed to **collect and present updated information on Italian biomethane projects**, providing a quick yet accurate **overview of key players, project locations, and emerging business opportunities**.
 

@@ -14,6 +14,6 @@ def apply_style_and_logo():
     # Sidebar content
     with st.sidebar:
         # App name at top
-        st.markdown("<h2 style='text-align: center;'>📊 WT_BiomethanIT", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center;'>WT APPLICATIONS HUB", unsafe_allow_html=True)
         st.sidebar.markdown("<br><br>", unsafe_allow_html=True)
         st.image("logo-wavetransition_long.png", use_container_width=True)
