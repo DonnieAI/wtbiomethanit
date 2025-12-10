@@ -60,10 +60,10 @@ fig1 = make_subplots(
     cols=1,
     shared_xaxes=True,
     vertical_spacing=0.12,
-    row_heights=[0.7, 0.3],
+    row_heights=[0.6, 0.4],
     subplot_titles=(
-        f" Capacity vs Production [bn Smc3/y] ",
-        "Production Growth [bn Smc3/y] "
+        f" Production Growth  [bn Smc3/y] ",
+        "Capacity vs Production [bn Smc3/y] "
     )
 )
 
@@ -71,31 +71,58 @@ fig1 = make_subplots(
 # ---- Step 2: Add the bar chart (cumulative production) ----
 
 fig1.add_trace(
-    go.Bar(
-        x=df_1["YEAR"],
-        y=df_1["CUMULATIVEPRODUCTION(bn_Scm_y)"],
-        name="Cumulative Production",
-        marker=dict(
-            color=palette_blue[4]
-        )
-    ),
-    row=1,
-    col=1
-)
+                go.Scatter(
+                    x=df_1["YEAR"],
+                    y=df_1["CUMULATIVEPRODUCTION(bn_Scm_y)"],
+                    mode="lines+markers",  # Add markers to the line
+                    name="Cumulative Production (bn Scm/y)",
+                    line=dict(
+                        color=palette_blue[4],
+                        width=3,
+                        dash="solid"
+                    ),
+                    marker=dict(
+                        symbol="diamond",      # Marker shape
+                        size=8,                # Marker size
+                        color=palette_blue[4], # Same color as line (optional)
+                        line=dict(
+                            width=1,
+                            color="white"      # Border around marker (optional)
+                        )
+                    ),
+                    fill="tozeroy",  # <-- This fills the area between the curve and y=0
+                    fillcolor="rgba(0, 116, 217, 0.2)"  # Optional: custom transparent fill color
+                ),
+                row=1,
+                col=1
+            )
 
 
 fig1.add_trace(
-    go.Bar(
-        x=df_1["YEAR"],
-        y=df_1["CUMULATIVECAPACITY(bn_Scm_y)"],
-        name="Cumulative Capacity",
-        marker=dict(
-            color=palette_green[4]
+                go.Bar(
+                    x=df_1["YEAR"],
+                    y=df_1["CUMULATIVEPRODUCTION(bn_Scm_y)"],
+                    name="Cumulative Production",
+                    marker=dict(
+                        color=palette_blue[4]
+                    )
+                ),
+                row=2,
+                col=1
+            )
+
+fig1.add_trace(
+            go.Bar(
+                x=df_1["YEAR"],
+                y=df_1["CUMULATIVECAPACITY(bn_Scm_y)"],
+                name="Cumulative Capacity",
+                marker=dict(
+                    color=palette_green[4]
+                )
+            ),
+            row=2,
+            col=1
         )
-    ),
-    row=1,
-    col=1
-)
 
 # ---- Step 3: Add horizontal PNRR target line ----
 PNRR_target = 5.3  #bn SM3Y
@@ -109,7 +136,7 @@ fig1.add_trace(
         name="🎯 PNRR Target",
         line=dict(color=palette_other[0], width=3, dash="longdash"),
     ),
-    row=1,
+    row=2,
     col=1
 )
 
@@ -117,61 +144,34 @@ fig1.add_trace(
 DM2018_cap = 1.1
 
 fig1.add_trace(
-    go.Scatter(
-        x=years,
-        y=[DM2018_cap] * len(years),
-        mode="lines",
-        name="🎯 DM2018 cap",
-        line=dict(color=palette_other[-1], width=4, dash="dashdot"),
-    ),
-    row=1,
-    col=1
-)
+                go.Scatter(
+                    x=years,
+                    y=[DM2018_cap] * len(years),
+                    mode="lines",
+                    name="🎯 DM2018 cap",
+                    line=dict(color=palette_other[-1], width=4, dash="dashdot"),
+                ),
+                row=2,
+                col=1
+            )
 
 # ---- Step 5: Update layout (optional, for better visuals) ----
 fig1.update_layout(
-    title="Cumulative Production vs. Targets",
-    xaxis_title="Year",
-    yaxis_title="Cumulative Production (bn Scm/y)",
-    barmode="group",
-    template="plotly_white",
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=1.02,
-        xanchor="right",
-        x=1
-    )
-)
+                    title="Cumulative Production vs. Targets",
+                    xaxis_title="Year",
+                    yaxis_title="Cumulative Production (bn Scm/y)",
+                    barmode="group",
+                    template="plotly_white",
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                    )
+                )
 
-fig1.add_trace(
-    go.Scatter(
-        x=df_1["YEAR"],
-        y=df_1["CUMULATIVEPRODUCTION(bn_Scm_y)"],
-        mode="lines+markers",  # Add markers to the line
-        name="Cumulative Production (bn Scm/y)",
-        line=dict(
-            color=palette_blue[4],
-            width=3,
-            dash="solid"
-        ),
-        marker=dict(
-            symbol="diamond",      # Marker shape
-            size=8,                # Marker size
-            color=palette_blue[4], # Same color as line (optional)
-            line=dict(
-                width=1,
-                color="white"      # Border around marker (optional)
-            )
-        ),
-        fill="tozeroy",  # <-- This fills the area between the curve and y=0
-        fillcolor="rgba(0, 116, 217, 0.2)"  # Optional: custom transparent fill color
-    ),
-    row=2,
-    col=1
-)
-
-
+fig1.update_xaxes(showticklabels=True, row=1, col=1)
 fig1.update_layout(height=1000) 
 # Display in Streamlit
 st.plotly_chart(fig1, use_container_width=True, key="subplot_breakdown_chart_1")
@@ -180,6 +180,10 @@ st.divider()
 #---------------------------------
 #NARRATIVE BOX
 # Narrative text with f-string + HTML styling
+
+Prd_value_2025=df_1.loc[df_1["YEAR"] == 2025, "CUMULATIVEPRODUCTION(bn_Scm_y)"].values[0]
+
+
 narrative = f"""
 <div style="
     border: 2px solid {palette_green[3]};
@@ -190,11 +194,11 @@ narrative = f"""
 ">
 <b>📊 Key Insights</b>
 
-- Figures for 2025  based on projections 
-- D.M 2018 boosted the production from **{df_1.loc[df_1["YEAR"] == 2018, "CUMULATIVEPRODUCTION(bn_Scm_y)"].values[0]}** to **{df_1.loc[df_1["YEAR"] == 2025, "CUMULATIVEPRODUCTION(bn_Scm_y)"].values[0]}** bn Smc from 2018 to 2025
-- Current biomethane theoric capacity in 2025 : **0.79** bn Smc/y with **115** plants in operations </span>  
+- Figures for 2025 based on projections  
+- Current biomethane estimated production in 2025 is <span style="color:{palette_green[3]}">**{Prd_value_2025}** bn Smc/y with **115** plants in operation</span>  
+- **{Prd_value_2025}** bn Smc/y are equivalent to {Prd_value_2025*10:.2f} TWh/y  
+- D.M 2018 boosted the production from **{df_1.loc[df_1["YEAR"] == 2018, "CUMULATIVEPRODUCTION(bn_Scm_y)"].values[0]}** to **{df_1.loc[df_1["YEAR"] == 2025, "CUMULATIVEPRODUCTION(bn_Scm_y)"].values[0]}** bn Smc from 2018 to 2025  
 - Target (PNRR): <span style="color:{palette_green[3]}">{PNRR_target} bn Smc/y</span>  
-
 
 <b>💡 Interpretation:</b>  
 - The sector is progressing, but still **below target**.  
@@ -215,8 +219,6 @@ st.divider()  # <--- Streamlit's built-in separator
 #---------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------
 
-
-
 st.title("DM 2018 - Statistics and Analysis ")
 st.markdown("""
             ### 🗺️ Figures related to the biomethane projects under the DM 2018
@@ -230,21 +232,21 @@ st.markdown("""
 df = pd.read_csv("data/impianti_biometano_sintesi_aggregata.csv")
 #-------------------------------------
 custom_colors_stato = {
-    "ESERCIZIO": palette_blue[0],
-    "COSTRUZIONE": palette_green[0]
- }
+                        "OPERATION": palette_blue[0],
+                        "QUALIFIED": palette_green[0]
+                    }
 
 custom_colors_accesso = {
-    "RETE":palette_blue[1],
-    "BIOLNG": palette_green[1],
-    "ALTRO":palette_other[1]
-}
+                        "RETE":palette_blue[1],
+                        "BIOLNG": palette_green[1],
+                        "ALTRO":palette_other[1]
+                    }
 
 custom_colors_dieta = {
-    "FORSU": palette_blue[2],  # Gold
-    "AGRI": palette_green[2],   # Hot pink
-    "MISTO": palette_other[2]  # Medium purple (example if exists)
-}
+                        "FORSU": palette_blue[3],  # Gold
+                        "AGRI": palette_green[3],   # Hot pink
+                        "MISTO": palette_other[5]  # Medium purple (example if exists)
+                    }
 
 # Initialize 3-column subplot (xy for bar, domain for pies)
 figDM2018 = make_subplots(
@@ -259,7 +261,7 @@ figDM2018 = make_subplots(
 total_plants_DM2018 = df.query("DECRETO == 'DM2018'")["NUM_IMPIANTI"].sum()
 
 # Grouped data for bar chart
-filtered_df = df.query("DECRETO == 'DM2018' and STATO in ['ESERCIZIO', 'COSTRUZIONE']")
+filtered_df = df.query("DECRETO == 'DM2018' and STATO in ['OPERATION', 'QUALIFIED']")
 agg_df = filtered_df.groupby(['TIPO', 'STATO'], as_index=False)['NUM_IMPIANTI'].sum()
 
 # ------------------ BAR CHART ------------------
@@ -371,22 +373,6 @@ st.markdown("""
 #----------- Load data
 df = pd.read_csv("data/impianti_biometano_sintesi_aggregata.csv")
 #-------------------------------------
-custom_colors_stato = {
-    "ESERCIZIO": palette_blue[0],
-    "COSTRUZIONE": palette_green[0]
- }
-
-custom_colors_accesso = {
-    "RETE":palette_blue[1],
-    "BIOLNG": palette_green[1],
-    "ALTRO":palette_other[1]
-}
-
-custom_colors_dieta = {
-    "FORSU": palette_blue[2],  # Gold
-    "AGRI": palette_green[2],   # Hot pink
-    "MISTO": palette_other[2]  # Medium purple (example if exists)
-}
 
 # Initialize 3-column subplot (xy for bar, domain for pies)
 figDM2022 = make_subplots(
@@ -401,7 +387,7 @@ figDM2022 = make_subplots(
 total_plants_DM2022 = df.query("DECRETO == 'DM2022'")["NUM_IMPIANTI"].sum()
 
 # Grouped data for bar chart
-filtered_df_2 = df.query("DECRETO == 'DM2022' and STATO in ['ESERCIZIO', 'COSTRUZIONE']")
+filtered_df_2 = df.query("DECRETO == 'DM2022' and STATO in ['OPERATION', 'QUALIFIED']")
 agg_df_2 = filtered_df_2.groupby(['TIPO', 'STATO'], as_index=False)['NUM_IMPIANTI'].sum()
 
 # ------------------ BAR CHART ------------------
@@ -423,51 +409,49 @@ for trace in bar_chart_2022.data:
 total_plants_DM2022_int = int(total_plants_DM2022)
 # Add horizontal reference line to bar chart
 figDM2022.add_trace(
-    go.Scatter(
-        x=agg_df["TIPO"].unique(),
-        y=[total_plants_DM2022_int] * len(agg_df["TIPO"].unique()),
-        mode="lines",
-        line=dict(color="#FFB347", width=5),  # pastel orange + thickness 5
-        name=f"Total plants DM2022 = {total_plants_DM2022_int}"
-    ),
-    row=1, col=1
-)
+                    go.Scatter(
+                        x=agg_df["TIPO"].unique(),
+                        y=[total_plants_DM2022_int] * len(agg_df["TIPO"].unique()),
+                        mode="lines",
+                        line=dict(color="#FFB347", width=5),  # pastel orange + thickness 5
+                        name=f"Total plants DM2022 = {total_plants_DM2022_int}"
+                    ),
+                    row=1, col=1
+                )
 
 # Add annotation directly on the bar chart (row=1, col=1)
 figDM2022.add_annotation(
-    x=0.12,  # center of chart
-    y=total_plants_DM2022_int + (0.05 * total_plants_DM2022_int),  # a bit above the line
-    xref="paper",
-    yref="y1",
-    text=f"<b>TOTAL: {total_plants_DM2022_int}</b>",
-    showarrow=False,
-    font=dict(color="#FFB347", size=14),
-    bgcolor="rgba(255,179,71,0.2)",  # optional pastel background
-    bordercolor="#FFB347",
-    borderwidth=1
-)
+                    x=0.12,  # center of chart
+                    y=total_plants_DM2022_int + (0.05 * total_plants_DM2022_int),  # a bit above the line
+                    xref="paper",
+                    yref="y1",
+                    text=f"<b>TOTAL: {total_plants_DM2022_int}</b>",
+                    showarrow=False,
+                    font=dict(color="#FFB347", size=14),
+                    bgcolor="rgba(255,179,71,0.2)",  # optional pastel background
+                    bordercolor="#FFB347",
+                    borderwidth=1
+                )
 
 
 # ------------------ PIE CHART: ACCESSO ------------------
 pie2022_1_df = df.query("DECRETO == 'DM2022'").groupby('ACCESSO', as_index=False)['NUM_IMPIANTI'].sum()
-
 pie1_colors = [custom_colors_accesso.get(a, "#CCCCCC") for a in pie2022_1_df["ACCESSO"]]
 
 figDM2022.add_trace(
-    go.Pie(
-        labels=pie2022_1_df ["ACCESSO"],
-        values=pie2022_1_df ["NUM_IMPIANTI"],
-        hole=0.4,
-        textinfo='percent+label+value',
-        marker=dict(colors=pie1_colors),
-        name="Accesso"
-    ),
-    row=1, col=2
-)
+                    go.Pie(
+                        labels=pie2022_1_df ["ACCESSO"],
+                        values=pie2022_1_df ["NUM_IMPIANTI"],
+                        hole=0.4,
+                        textinfo='percent+label+value',
+                        marker=dict(colors=pie1_colors),
+                        name="Accesso"
+                    ),
+                    row=1, col=2
+                )
 
 # ------------------ PIE CHART: DIETA ------------------
 pie2022_2_df = df.query("DECRETO == 'DM2022'").groupby('DIETA', as_index=False)['NUM_IMPIANTI'].sum()
-
 pie2_colors = [custom_colors_dieta.get(d, "#CCCCCC") for d in pie2022_2_df["DIETA"]]
 
 figDM2022.add_trace(
