@@ -120,11 +120,9 @@ layer = pdk.Layer(
                 get_color="color",
                 get_line_color=[0, 0, 0],
                 line_width_min_pixels=1,
-
                 get_radius="radius_m",
                 radius_min_pixels=2,
                 radius_max_pixels=80,
-
                 pickable=True
 )
 
@@ -167,21 +165,16 @@ tooltip = {
         "fontSize": "12px"
     }
 }
-
-
-
 view_state = pdk.ViewState(
     latitude=center_lat,
     longitude=center_lon,
     zoom=5
 )
-
 layers = [layer]
 if additional_layer:
     layers.append(additional_layer)
 if additional_layer_2:
     layers.append(additional_layer_2)
-
 
 deck = pdk.Deck(
     layers=layers,
@@ -190,7 +183,6 @@ deck = pdk.Deck(
     #map_style="mapbox://styles/mapbox/light-v9",  # optional
     height=900  # 👈 taller map
 )
-
 
 st.pydeck_chart(deck)
 
