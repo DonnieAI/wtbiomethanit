@@ -39,7 +39,7 @@ palette_other = [
 
 st.title("Biomethane Revenues Comparison")
 st.markdown("""
-            ### 💵 Biomethane Revenues Analysis 
+            ### 💵 Biomethane Revenues Analysis (only advanced biomethane AGRI - no WASTE) 
             
             """)
 st.markdown(""" 
@@ -58,14 +58,13 @@ col1, col2, col3 = st.columns(3)
 with col1:
     smc_h = st.number_input("Capacity (Smc/h)", value=500, step=50)
     with col2:
-        hours = st.number_input("Operating hours/year", value=8000, step=100)
+        hours = st.number_input("Operating hours/year", value=8500, step=100)
     with col3:
-        share_lng = st.slider("Share of bioLNG (%)", 0, 100, 50, step=5)
+        share_lng = st.slider("Share of bioLNG (%)", 0, 100, 0, step=5)
 
 # Total Energy production (MWh)
-smc_year = smc_h * hours
-mwh_year = smc_year * 10.69 / 1000 # PCS 10.69 kWh/Smc
-
+smc_year = smc_h * hours  #smc/y
+mwh_year = smc_year * 9.5 / 1000 #   valore standard GSE: PCS ~ 9.5 kWh/Smc
 
 #bioCH4 to GRID
 smc_to_grid=smc_year*(1-share_lng / 100)
@@ -77,7 +76,6 @@ t_lng=mwh_lng/13.5
 
 
 mwh_grid = mwh_year - mwh_lng
-
 
 co2_t = smc_year * 1.96 / 1000 * 0.9 # t/year, 90% capture efficiency
 
@@ -122,38 +120,47 @@ st.subheader("🧮 Market assumptions")
 
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    p_gas = st.slider("Gas price (€/MWh)", 10.0, 80.0, 35.0, 1.0)
+    p_gas = st.slider("Gas price (€/MWh)", 10.0, 80.0, 20.0, 1.0)
     with col2:
-        p_lng = st.slider("bioLNG price (€/MWh)", 20.0, 100.0, 45.0, 1.0)
+        p_lng = st.slider("bioLNG price (€/MWh)", 20.0, 100.0, 0.0, 1.0)
     with col3:
-        p_go = st.slider("GO price (€/MWh)", 0.0, 5.0, 0.4, 0.1)
+        p_go = st.slider("GO price (€/MWh)", 0.0, 5.0, 0.0, 0.1)
     with col4:
-        p_co2 = st.slider("merchant CO₂ price (€/t)", 0, 200, 100, 10)
+        p_co2 = st.slider("merchant CO₂ price (€/t)", 0, 200, 0, 10)
     with col5:
-        p_dig = st.slider("Digestate value (€/t)", 0, 20, 7, 1)
+        p_dig = st.slider("Digestate value (€/t)", 0, 20, 0, 1)
 
 
 # --- Common side revenues ---
 # CO2
-
 rev_co2 = co2_t * p_co2
 
 # Digestate
 rev_dig = digestate_t * p_dig
 
-
 # --- DM 2018 calculations ---
+#-----------------------------
 # CIC factors
-cic_value = 375 # €/CIC
-cic_per_mwh = 1 / 5.811 # CIC per MWh advanced
+cic_value = 375  # €/CIC
+biometano_avanzato_flag = True
 
+base_cic = smc_to_grid / 1230
 
-# Grid: -5% eligible, no +20%
-#cic_grid = mwh_grid * 0.95 * cic_per_mwh
-cic_grid =smc_to_grid /(5)*0.00902  # biometano avanzato!! 1 CIC--> 5 Gcal
-cic_lng =(smc_to_lng /(5)*0.00902)*1.2  # biometano avanzato!! 1 CIC--> 5 Gcal
+if biometano_avanzato_flag:
+    cic_grid = base_cic * 2
+else:
+    cic_grid = base_cic
 
 rev_cic_grid = cic_grid * cic_value
+
+
+cic_per_mwh = 1 / 5.811 # CIC per MWh advanced
+# Grid: -5% eligible, no +20%
+#cic_grid = mwh_grid * 0.95 * cic_per_mwh
+#cic_grid =smc_to_grid /(5)*0.00902  # biometano avanzato!! 1 CIC--> 5 Gcal
+cic_lng =(smc_to_lng /(5)*0.00902)*1.2  # biometano avanzato!! 1 CIC--> 5 Gcal
+
+
 rev_gas_grid = mwh_grid * 0.95 * p_gas
 
 
@@ -237,8 +244,13 @@ st.markdown(rf"""
     line-height: 1.8;
 ">
 
-📘 <b>DM 2022: Contract for Difference</b> <br>
-$ \text{{TP}} = TR - P_{{GO}} - P_{{gas}} $
+📘 <b>DM 2022: Contract for Difference</b> <br><br>
+
+$ \text{{Tariff Premium (TP)}} = TR - P_{{\text{{gas}}}} $ <br><br>
+
+$ \text{{Revenues}} = Q_{{\text{{energy}}}} \cdot ( P_{{\text{{gas}}}} + TP ) + Q_{{\text{{energy}}}} \cdot P_{{GO}} $ <br><br>
+
+$ \Rightarrow \text{{Revenues}} = Q_{{\text{{energy}}}} \cdot ( TR + P_{{GO}} ) $
 </div>
 """, unsafe_allow_html=True)
 
@@ -292,14 +304,19 @@ color_map = {
     "Premium (TP)":          palette_green[4],  # lime green (distinct, DM 2022-specific)
 }
 
+# Step 1: Prepare melted dataframe
 plot_df_reset = plot_df.reset_index().melt(id_vars="index", var_name="Scheme", value_name="Revenue")
+plot_df_reset_sorted = plot_df_reset.sort_values(["Scheme", "Revenue"], ascending=[True, False])
 
-plot_df_reset_sorted = (
-    plot_df_reset
-    .sort_values(["Scheme", "Revenue"], ascending=[True, False])  # sort by Scheme, then by Revenue descending
+# Step 2: Compute total revenue per Scheme
+total_revenue = (
+    plot_df_reset.groupby("Scheme")["Revenue"]
+    .sum()
+    .reset_index()
 )
 
-fig = px.bar(
+# Step 3: Create base bar chart using plotly express
+bar_fig = px.bar(
     plot_df_reset_sorted,
     x="Scheme",
     y="Revenue",
@@ -310,6 +327,34 @@ fig = px.bar(
     color_discrete_map=color_map
 )
 
+# Step 4: Convert to go.Figure for adding overlays
+fig = go.Figure(data=bar_fig.data)
+
+# Step 5: Add diamond-shaped scatter points for total revenue
+fig.add_trace(
+    go.Scatter(
+        x=total_revenue["Scheme"],
+        y=total_revenue["Revenue"],
+        mode="markers+text",
+        marker=dict
+            (symbol="diamond", 
+             size=16, 
+             color=palette_other[4]),
+        text=[f"{val/1000000:,.1f}" for val in total_revenue["Revenue"]],
+        textposition="top center",
+        name="Total Revenue (Diamond)"
+    )
+)
+
+# Optional: Update layout for better appearance
+fig.update_layout(
+                title="Stacked revenue components – DM 2018 vs DM 2022",
+                yaxis_title="Revenue",
+                xaxis_title="Scheme",
+                legend_title="Revenue Component",
+            )
+# Ensure bar mode is 'stack' to keep stacked bars
+fig.update_layout(barmode='stack')
 st.plotly_chart(fig, use_container_width=True)
 
 
