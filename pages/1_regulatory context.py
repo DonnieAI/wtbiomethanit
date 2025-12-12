@@ -41,19 +41,33 @@ st.markdown(
 
     ---
 
-     #### 💡Note: The **GSE** plays a central role in managing incentives, verifying compliance, and facilitating market integration of biomethane.
+     ### 💡Note: The **GSE** plays a central role in managing incentives, verifying compliance, and facilitating market integration of biomethane.
     ---
-
-    ## 🧾 DM 2018 – First Incentive Scheme
-    - **Full name:** Ministerial Decree of March 2, 2018.
-    - **Objective:** Support the production of biomethane for transport and advanced biofuels.
-    - **Key measures:**
-    - Guaranteed purchase of biomethane by the Gestore dei Servizi Energetici (**GSE**) at incentivized tariffs.
-    - Support for plants converting biogas to biomethane.
-    - Priority for **advanced biomethane** from waste and agricultural residues.
-    - Incentives valid for a maximum of **20 years** from commissioning.
 """
 )
+
+st.markdown("""
+## 🧾 DM 2018 (Ministerial Decree 2 March 2018) — CIC-based support (mainly transport)
+
+**What it is**
+- A support scheme designed to stimulate biomethane (especially **advanced biomethane**) for the **transport/biofuels obligation** market.
+- The incentive is mainly delivered through **CIC (Immission Certificates)** rather than a classic feed-in tariff.
+
+**How revenues are supported**
+- **Market revenue:** biomethane is sold at a market gas price (e.g., PSV-linked).
+- **Incentive component:** eligible production receives **CIC**, and (for a limited time) a **fixed-value withdrawal/premium** managed by **GSE**.
+
+**Duration & predictability**
+- **Fixed CIC value (withdrawal/premium) is granted for up to 10 years**.
+- After the 10-year period, the plant may still receive **CIC issuance**, but the fixed-value withdrawal/premium ends (CIC can be sold to market counterparties).
+
+**Key takeaways for investment modelling**
+- Partial hedge via CIC, but **exposure to gas price risk (PSV)** remains on the market-sales component.
+- Advanced biomethane can receive **uplifts (e.g., double-counting / higher CIC entitlement)** depending on eligibility.
+
+**Institutional role**
+- **GSE** manages verification, eligibility checks and operational procedures for incentive recognition.
+""")
 
 
 # --- External link ---
@@ -85,25 +99,31 @@ st.download_button(
 )
 
 
-st.markdown(
-"""
+st.markdown("""
+## 🔄 DM 2022 (Ministerial Decree 15 September 2022) — PNRR-backed framework (Capex + Operating support)
 
-    ---
+**What it is**
+- A new biomethane framework aligned with **PNRR (Mission 2, Component 2, Investment 1.4)** to accelerate new plants and conversions.
+- It combines **investment support (capex grant)** with a long-term **operating incentive** for injected biomethane.
 
-    ## 🔄 DM 2022 – New Support Framework
-    - **Full name:** Ministerial Decree of September 15, 2022.
-    - **Objective:** Accelerate biomethane development in line with the **Italian National Recovery and Resilience Plan (PNRR)**.
-    - **Key measures:**
-    - Dedicated funding of **€1.92 billion** from the PNRR for new plants and conversions.
-    - Capital grants covering up to **40% of investment costs**.
-    - Updated feed-in tariffs for injected biomethane.
-    - Strong focus on sustainability and reduction of greenhouse gas emissions.
+**Two-layer support**
+- **Capex grant:** up to **40% of eligible investment costs** (one-off, subject to PNRR rules).
+- **Operating incentive:** an incentive applied to the **net biomethane injected**.
 
-    ---
+**Operating mechanism (15-year stability)**
+- Incentives are recognized for **15 years from commercial operation date** (net of eligible force-majeure stoppages).
+- Two commercial regimes exist:
+  - **TO (Tariffa Omnicomprensiva)**: GSE purchases the biomethane and sells it to the market (FiT-like offtake).
+  - **TP (Tariffa Premio / CfD-like)**: the producer sells biomethane on the market and GSE pays a premium that regulates revenues towards the awarded tariff.
 
+**Access & timing**
+- Access occurs via **competitive auctions** (pay-as-bid discount on the reference tariff).
+- Eligible projects must enter operation within the PNRR deadline (e.g., **by 30 June 2026**, per decree conditions).
 
-    """
-)
+**Key takeaways for investment modelling**
+- Compared to DM 2018, the “gas” revenue line is typically **more predictable** under the CfD/TO logic because the tariff mechanism reduces direct exposure to gas price volatility (especially under TP/CfD logic).
+- Stronger emphasis on sustainability requirements (RED II) and PNRR compliance controls, with GSE managing procedures and verification.
+""")
 
 st.markdown("""
             #### 🌍 Web links
